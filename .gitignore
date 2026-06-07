@@ -1,0 +1,16 @@
+# This .gitignore file should be placed at the root of your Unity project directory
+#
+# IGNORE EVERYTHING
+#
+/*
+/*/
+
+# Main Files 
+!/ProjectSettings/
+!/Assets/
+!/Assets/SourceDeveloperConsole/
+
+# Git Repository files
+!.gitignore
+!.gitattributes
+!README.md
