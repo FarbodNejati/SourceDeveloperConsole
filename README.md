@@ -52,4 +52,5 @@ You can use the provided `DeveloperConsole` element within your own menus, and a
 Feel free to look at the source code of the `DeveloperConsole.cs` element to see how to use features such as autocomplete.
 
 
-* by [Farbod Nejati](https://github.com/FarbodNejati)
+* Created by [Farbod Nejati](https://github.com/FarbodNejati)
+* Inspired by [ZeroByter](https://github.com/ZeroByter/SourceConsole/tree/master)

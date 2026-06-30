@@ -4,7 +4,5 @@
   "displayName": "Source Developer Console",
   "description": "A Source-Engine inspired developer console for executing commands, in editor and runtime.",
   "unity": "2022.2",
-  "dependencies": {
-    "com.unity.some-package": "1.0.0"
-  }
+  "dependencies": {}
 }

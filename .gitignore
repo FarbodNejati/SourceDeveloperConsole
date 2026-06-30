@@ -4,9 +4,9 @@
 #
 /*
 /*/
+/ProjectSettings/
 
 # Main Files 
-!/ProjectSettings/
 !/Assets/
 !/Assets/SourceDeveloperConsole/
 
