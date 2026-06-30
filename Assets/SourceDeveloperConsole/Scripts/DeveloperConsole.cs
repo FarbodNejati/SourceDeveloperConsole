@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 namespace Farbod.DeveloperConsole
 {
@@ -19,7 +17,7 @@ namespace Farbod.DeveloperConsole
         /// <summary>
         /// Static methods that may be executed through the console.
         /// </summary>
-        public static List<ConsoleMethod> console_methods {  get; private set; }
+        public static List<ConsoleMethod> console_methods { get; private set; }
 
         /// <summary>
         /// Static variables that may be set or viewed through the console.
@@ -43,7 +41,7 @@ namespace Farbod.DeveloperConsole
         [ConsoleMethod("reindex", "regenerate the index of console commands")]
         public static void IndexCommands()
         {
-            var assemblies = new Assembly[] { Assembly.GetAssembly(typeof(DeveloperConsole))};
+            var assemblies = new Assembly[] { Assembly.GetAssembly(typeof(DeveloperConsole)) };
 
             console_methods = new();
             console_variables = new();
@@ -82,15 +80,15 @@ namespace Farbod.DeveloperConsole
 
         public static void IndexCommandsIfNotIndexed()
         {
-            if(console_methods == null || console_variables == null)
+            if (console_methods == null || console_variables == null)
             {
                 IndexCommands();
             }
         }
-        
+
         public static void ExecuteCommand(string command)
         {
-            OnLog.Invoke("> "+command, ConsoleLogType.user_input);
+            OnLog.Invoke("> " + command, ConsoleLogType.user_input);
             CommandParser.ExecuteString(command);
         }
         public static object ExecuteConMethod(ConsoleMethod command, params object[] user_args)
@@ -149,11 +147,27 @@ namespace Farbod.DeveloperConsole
             //Get and print the value
             if (value == null)
             {
-                if (conVariable.PropertyInfo != null)
-                    return conVariable.PropertyInfo.GetMethod.Invoke(null, null);
+                try
+                {
+                    if (conVariable.PropertyInfo != null)
+                        return conVariable.PropertyInfo.GetMethod.Invoke(null, null);
 
-                else
-                    return conVariable.FieldInfo.GetValue(null);
+                    else
+                        return conVariable.FieldInfo.GetValue(null);
+                }
+                catch (TargetInvocationException e) // Catch inner error for invocation errors
+                {
+                    // Get the actual exception that was thrown
+                    Exception innerException = e.InnerException;
+                    // Show the real error
+                    Error(innerException);
+                }
+                catch (Exception e)
+                {
+                    Error(e);
+                    // Also display in the default console
+                    UnityEngine.Debug.LogError($"{e.GetType().Name}: {e.Message}");
+                }
             }
             else
             {
@@ -244,7 +258,7 @@ namespace Farbod.DeveloperConsole
         public static void Help(string commandName = null)
         {
             //If no name is given, list all commands
-            if(commandName == null || commandName.Trim() == "")
+            if (commandName == null || commandName.Trim() == "")
             {
                 foreach (var cmd in command_index)
                     Print(cmd);
@@ -260,7 +274,7 @@ namespace Farbod.DeveloperConsole
                 Error("Unknown command, Use 'help' to get a list of all available commands.");
                 return;
             }
-                
+
             //Description
             string desc = command.GetDescription();
             if (!string.IsNullOrEmpty(desc))
@@ -269,7 +283,7 @@ namespace Farbod.DeveloperConsole
             }
             //Command usage (with parameters)
             int parametersLength = command.GetParametersLength();
-            if(parametersLength > 0)
+            if (parametersLength > 0)
             {
                 // If we are dealing with a console variable (which only takes one value, if it can be set in the first place)
                 // Then simply display the type of the console variable.
@@ -292,9 +306,9 @@ namespace Farbod.DeveloperConsole
                     Print($"Usage: <color=\"yellow\">{command.GetName()} <color=\"grey\">{string.Join(" ", paramsUsage)}");
                 }
 
-                
+
             }
-            
+
         }
 
 
@@ -357,7 +371,7 @@ namespace Farbod.DeveloperConsole
             return result.ToArray();
 
 
-            
+
         }
 
         public static T GetConVarAttribute<T>(FieldInfo field) where T : ConsoleVariable
@@ -381,7 +395,7 @@ namespace Farbod.DeveloperConsole
             return default(T);
         }
 
-        
+
 
         private class RepeatedCommandException : Exception
         {

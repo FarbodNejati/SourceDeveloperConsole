@@ -44,7 +44,7 @@ namespace Farbod.DeveloperConsole
 
             if (ShowStartupMessage)
             {
-                Log("Welcome to the developer console. For info on all available commands, use 'help'");
+                DeveloperConsole.Print("<color=\"grey\">Welcome to the developer console. For info on all available commands, use 'help'");
             }
         }
         protected void PopulateElement()
@@ -87,7 +87,7 @@ namespace Farbod.DeveloperConsole
         protected void RegisterCallbacks()
         {
             //Display any logs from the developer console
-            DeveloperConsole.OnLog += (log, type) => Log(log, type);
+            DeveloperConsole.OnLog += (log, type) => CreateLogEntry(log, type);
 
 
             // Submit button
@@ -177,9 +177,11 @@ namespace Farbod.DeveloperConsole
         /// </summary>
         /// <param name="text"></param>
         /// <param name="logType"></param>
-        public void Log(string text, ConsoleLogType logType = ConsoleLogType.standard)
+        public void CreateLogEntry(string text, ConsoleLogType logType = ConsoleLogType.standard)
         {
             Label entry = new Label(text);
+            entry.selection.isSelectable = true;
+
             //Assign css classes
             switch (logType)
             {

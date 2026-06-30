@@ -42,6 +42,7 @@ namespace Farbod.DeveloperConsole
 
             string[] string_args = ParseArgs(parts, command.GetParametersLength());
             object return_result = null;
+
             if (command is ConsoleMethod)
             {
                 var conMethod  = (ConsoleMethod)command;
