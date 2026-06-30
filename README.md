@@ -20,7 +20,7 @@ public static void CalculatePower(int a, int b)
 ```
 
 ### Registering Console-Variables
-you can register a console console variable by adding the `ConsoleVariable` attribute to a static Field or Property:
+you can register a console console variable by adding the `ConsoleVariable` attribute to a Field or Property:
 ```cs
 // RuntimeManager Singleton
 
