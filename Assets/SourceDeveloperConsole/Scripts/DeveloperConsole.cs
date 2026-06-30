@@ -1,10 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace Farbod.DeveloperConsole
 {
+    public enum ConsoleLogType
+    {
+        standard,
+        error,
+        warning,
+        user_input
+    }
     public static class DeveloperConsole
     {
         /// <summary>
@@ -20,7 +29,12 @@ namespace Farbod.DeveloperConsole
         /// <summary>
         /// All indexed console commands as their string name
         /// </summary>
-        public static List<string> command_index { get; private set; }
+        public static List<string> command_index { get; private set; } = new();
+        public static event Action<string, ConsoleLogType> OnLog;
+
+        [ConsoleVariable("show_full_stacktrace", "should the console show a full error traceback, or simply the name and message.")]
+        public static bool ShowFullErrorStackTrace { get; set; } = false;
+
 
         /// <summary>
         /// Find every command and index their names.
@@ -59,7 +73,230 @@ namespace Farbod.DeveloperConsole
                 command_index.Add(name);
                 console_variables.Add(conVar);
             }
+
+            // Order command name index by name
+            command_index.OrderBy(x => x).ToList();
+
+            Print($"Indexed {command_index.Count} commands.");
         }
+
+        public static void IndexCommandsIfNotIndexed()
+        {
+            if(console_methods == null || console_variables == null)
+            {
+                IndexCommands();
+            }
+        }
+        
+        public static void ExecuteCommand(string command)
+        {
+            OnLog.Invoke("> "+command, ConsoleLogType.user_input);
+            CommandParser.ExecuteString(command);
+        }
+        public static object ExecuteConMethod(ConsoleMethod command, params object[] user_args)
+        {
+            //This code is for automatically putting in default parameter values if they exist and weren't specified explicitly by the user
+            object[] method_arguments;
+            var method_params = command.MethodInfo.GetParameters();
+
+            //If proper arguments are given
+            if (user_args != null && user_args.Length == method_params.Length)
+            {
+                method_arguments = user_args;
+            }
+            //Otherwise, try to fill the needed slots with user args, and fil the others with their default value
+            else
+            {
+                method_arguments = new object[method_params.Length];
+                for (int i = 0; i < method_params.Length; i++)
+                {
+                    //Copy user args to new args
+                    if (i < user_args.Length)
+                        method_arguments[i] = user_args[i];
+                    //Get default value if available
+                    else if (method_params[i].HasDefaultValue)
+                        method_arguments[i] = method_params[i].DefaultValue;
+                }
+            }
+
+
+            object return_object = null;
+            // Invoke the method
+            try
+            {
+                return_object = command.MethodInfo.Invoke(null, method_arguments);
+            }
+            catch (TargetInvocationException e) // Catch inner error for invocation errors
+            {
+                // Get the actual exception that was thrown
+                Exception innerException = e.InnerException;
+                // Show the real error
+                Error(innerException);
+            }
+            catch (Exception e)
+            {
+                Error(e);
+
+                // Also display in the default console
+                UnityEngine.Debug.LogError($"{e.GetType().Name}: {e.Message}");
+            }
+
+            //Return the commands return object
+            return command.MethodInfo.ReturnType == null ? null : return_object;
+        }
+        public static object ExecuteConVar(ConsoleVariable conVariable, object value)
+        {
+            //Get and print the value
+            if (value == null)
+            {
+                if (conVariable.PropertyInfo != null)
+                    return conVariable.PropertyInfo.GetMethod.Invoke(null, null);
+
+                else
+                    return conVariable.FieldInfo.GetValue(null);
+            }
+            else
+            {
+                //if user has inputted multiple arguments into the console input string, we just use the first one
+                object singleArg = null;
+                if (value is object[])
+                {
+                    if (((object[])value).Length > 0)
+                    {
+                        singleArg = ((object[])value)[0];
+                    }
+                }
+                else
+                {
+                    singleArg = value;
+                }
+
+                try
+                {
+                    if (conVariable.PropertyInfo != null)
+                        conVariable.PropertyInfo.SetValue(null, singleArg);
+                    else
+                        conVariable.FieldInfo.SetValue(null, singleArg);
+                }
+                catch (TargetInvocationException e) // Catch inner error for invocation errors
+                {
+                    // Get the actual exception that was thrown
+                    Exception innerException = e.InnerException;
+                    // Show the real error
+                    Error(innerException);
+                }
+                catch (Exception e)
+                {
+                    Error(e);
+
+                    // Also display in the default console
+                    UnityEngine.Debug.LogError($"{e.GetType().Name}: {e.Message}");
+                }
+            }
+
+            return null;
+        }
+
+        public static List<string> GetAutoCompleteMatches(string input, int maximumResults = 6)
+        {
+            string query = input?.Trim().ToLower() ?? "";
+            if (string.IsNullOrEmpty(query))
+                return new(0);
+
+            //Search for commands that start with our query text, and order them by their name.
+            return command_index
+                .Where(cmd => cmd.StartsWith(query))
+                .OrderByDescending(cmd => cmd.StartsWith(query)) // Exact prefix match first
+                .ThenBy(cmd => cmd.Length) // Shortest first (likely most relevant)
+                .ThenBy(cmd => cmd) // Then alphabetical
+                .Take(6)
+                .ToList();
+        }
+
+        [ConsoleMethod("print", "log a message to the console.")]
+        public static void Print(string message)
+        {
+            if (message == null)
+                throw new ArgumentNullException("message");
+            OnLog.Invoke(message, ConsoleLogType.standard);
+        }
+        [ConsoleMethod("error", "log an error to the console.")]
+        public static void Error(string message)
+        {
+            OnLog.Invoke(message, ConsoleLogType.error);
+        }
+
+        public static void Error(System.Exception exception)
+        {
+            if (ShowFullErrorStackTrace)
+                Error(exception.ToString());
+            else
+                Error($"{exception.GetType().Name}: {exception.Message}");
+        }
+
+        [ConsoleMethod("warn", "log an error to the console.")]
+        public static void Warn(string message)
+        {
+            OnLog.Invoke(message, ConsoleLogType.warning);
+        }
+
+        [ConsoleMethod("help", "List all commands, or log the information of a command.")]
+        public static void Help(string commandName = null)
+        {
+            //If no name is given, list all commands
+            if(commandName == null || commandName.Trim() == "")
+            {
+                foreach (var cmd in command_index)
+                    Print(cmd);
+
+                return;
+            }
+
+
+
+            var command = CommandParser.ParseCommand(commandName);
+            if (command == null)
+            {
+                Error("Unknown command, Use 'help' to get a list of all available commands.");
+                return;
+            }
+                
+            //Description
+            string desc = command.GetDescription();
+            if (!string.IsNullOrEmpty(desc))
+            {
+                Print($"Description: \"{command.GetDescription()}\"");
+            }
+            //Command usage (with parameters)
+            int parametersLength = command.GetParametersLength();
+            if(parametersLength > 0)
+            {
+                // If we are dealing with a console variable (which only takes one value, if it can be set in the first place)
+                // Then simply display the type of the console variable.
+                if (command is ConsoleVariable)
+                {
+                    Print($"To Set: <color=\"yellow\">{command.GetName()} <color=\"grey\"><{(command as ConsoleVariable).VariableType.Name}>");
+                    Print($"To Get: <color=\"yellow\">{command.GetName()}");
+                }
+                //Console method (has multiple parameters)
+                else
+                {
+                    string[] paramsUsage = new string[parametersLength];
+                    var methodParams = (command as ConsoleMethod).MethodInfo.GetParameters();
+                    for (int i = 0; i < parametersLength; i++)
+                    {
+                        string optional = methodParams[i].IsOptional ? " (optional)" : "";
+                        paramsUsage[i] = $"<{methodParams[i].Name} : {methodParams[i].ParameterType.Name}{optional}>";
+                    }
+
+                    Print($"Usage: <color=\"yellow\">{command.GetName()} <color=\"grey\">{string.Join(" ", paramsUsage)}");
+                }
+
+                
+            }
+            
+        }
+
 
         private static ConsoleMethod[] FindAllMethodAttributes(Assembly[] assemblies)
         {
@@ -144,6 +381,8 @@ namespace Farbod.DeveloperConsole
             return default(T);
         }
 
+        
+
         private class RepeatedCommandException : Exception
         {
             public RepeatedCommandException(string message) : base(message) { }
@@ -188,7 +427,7 @@ namespace Farbod.DeveloperConsole
         /// <returns>Returns custom name if available, otherwise returns method name</returns>
         public string GetName()
         {
-            return !string.IsNullOrEmpty(NameOverride) ? MethodInfo.Name.ToLower() : NameOverride;
+            return string.IsNullOrEmpty(NameOverride) ? MethodInfo.Name.ToLower() : NameOverride;
         }
 
         /// <summary>
@@ -218,8 +457,15 @@ namespace Farbod.DeveloperConsole
         public string NameOverride { get; private set; }
         public string Description { get; private set; }
 
+        /// <summary>
+        /// whether this conVar has a valid setter
+        /// </summary>
         public bool CanBeSet => (FieldInfo != null || (PropertyInfo != null && PropertyInfo.GetSetMethod(false) != null));
 
+        /// <summary>
+        /// The object type of this variable
+        /// </summary>
+        public Type VariableType => PropertyInfo?.PropertyType ?? FieldInfo?.FieldType;
 
         public FieldInfo FieldInfo { get; set; }
         public PropertyInfo PropertyInfo { get; set; }
