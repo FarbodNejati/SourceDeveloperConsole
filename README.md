@@ -13,9 +13,9 @@ The static `DeveloperConsole` class is the one that executes the commands and ha
 you can register a console method command by adding the `ConsoleMethod` attribute to a **static** method :
 ```cs
 [ConsoleMethod("pow", "raise a to the power of b.")]
-public static void CalculatePower(int a, int b)
+public static int CalculatePower(int a, int b)
 {
-    Debug.Log(result);
+    return Math.Pow(a, b);
 }
 ```
 
