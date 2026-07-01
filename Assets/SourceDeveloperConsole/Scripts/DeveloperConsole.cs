@@ -519,10 +519,10 @@ namespace Farbod.DeveloperConsole
 
         public string GetUsage()
         {
-            if(CanBeSet)
-                return($"{GetName()} <{VariableType.Name}(optional)>");
+            if (CanBeSet)
+                return $"{GetName()} <value:{VariableType.Name}(optional)>";
             else
-                return (GetName());
+                return GetName();
         }
         /// <summary>
         /// The amount of variables this console command accepts
