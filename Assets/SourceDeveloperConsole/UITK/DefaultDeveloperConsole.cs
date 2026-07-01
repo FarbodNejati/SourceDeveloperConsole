@@ -253,9 +253,10 @@ namespace Farbod.DeveloperConsole
             m_SuggestionLabels = new Label[items.Count()];
             for (int i = 0; i < m_SuggestionLabels.Length; i++)
             {
-                Label itemLabel = new Label(items[i]);
+                string txt = items[i];
+                Label itemLabel = new Label(txt);
                 itemLabel.AddToClassList("replacement");
-                itemLabel.RegisterCallback<ClickEvent>(evt => ApplySuggestion(items[i]));
+                itemLabel.RegisterCallback<ClickEvent>(evt => ApplySuggestion(txt));
                 m_SuggestionPopup.Add(itemLabel);
 
                 m_SuggestionLabels[i] = itemLabel;
