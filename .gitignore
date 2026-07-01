@@ -7,7 +7,8 @@
 /ProjectSettings/
 
 # Main Files 
-!/Assets/
+!/ProjectSettings/ProjectSettings.asset
+!/ProjectSettings/ProjectVersion.txt
 !/Assets/SourceDeveloperConsole/
 
 # Git Repository files

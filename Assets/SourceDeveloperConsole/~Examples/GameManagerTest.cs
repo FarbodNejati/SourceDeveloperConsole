@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace Farbod.DeveloperConsole.Examples
 {
+    public enum CameraMode
+    {
+        FirstPerson,
+        ThirdPerson,
+        VR
+    }
     /// <summary>
     /// A singleton GameManager-like class
     /// </summary>
@@ -15,9 +21,18 @@ namespace Farbod.DeveloperConsole.Examples
         [SerializeField] GameObject _cubeprefab;
 
         /// <summary>
+        /// The simplest way to set up a console variable
+        /// </summary>
+        [ConsoleVariable("eg_cameramode", "(example command) Set the Camera mode enum setting")]
+        private static CameraMode _camMode { get; set; }
+
+        private static int _staticNumber = 6;
+
+        /// <summary>
+        /// A console variable with a proper getter and setter
         /// This command sets a value on our class's singleton instance. but first we check to see if the instance is set or not.
         /// </summary>
-        [ConsoleVariable("difficulty", "(example command) The difficulty index of the game. (0 to 3)")]
+        [ConsoleVariable("eg_difficulty", "(example command) The difficulty index of the game. (0 to 3)")]
         public static int Difficulty
         {
             get
@@ -39,7 +54,10 @@ namespace Farbod.DeveloperConsole.Examples
             }
         }
 
-        [ConsoleMethod("createcube", "(example command) Creates a cube at the world origin")]
+        /// <summary>
+        /// The simplest way to set up a console command.
+        /// </summary>
+        [ConsoleMethod("eg_createcube", "(example command) Creates a cube at the world origin")]
         public static void CreateCube(float scale = 1f)
         {
             if (instance == null)
@@ -54,6 +72,16 @@ namespace Farbod.DeveloperConsole.Examples
             cube.transform.parent = transform;
             cube.transform.localPosition = Vector3.zero;
             cube.transform.localScale = new(scale, scale, scale);
+        }
+
+        /// <summary>
+        /// The simplest way to set up a console command.
+        /// </summary>
+        [ConsoleMethod("eg_setsettings", "(example command) Just testing method parameters")]
+        public static void SetSettings(int test_number ,CameraMode camMode)
+        {
+            _staticNumber = test_number;
+            _camMode = camMode;
         }
         private void Awake()
         {

@@ -25,37 +25,24 @@ namespace Farbod.DeveloperConsole
         /// Given a string, executes it normally as if it were a console-input
         /// </summary>
         /// <param name="input"></param>
-        public static void ExecuteString(string input)
+        public static void ParseCommandWithArgs(string input, out IConsoleCommand command, out string[] string_args)
         {
-            if (input == "") return;
+            if (input == "")
+            {
+                command = null;
+                string_args = null;
+                return;
+            }
 
             string[] parts = input.Split(' '); //split the input string into parts
             string commandName = parts[0]; //get just the command name
 
             // Attempt to parse this command
-            var command = ParseCommand(commandName);
+            command = ParseCommand(commandName);
             if(command == null)
-            {
-                DeveloperConsole.Error("Unknown command");
-                return;
-            }
+                throw new InvalidCommandException("command not found, use 'help' to see a all available commands, or reindex your commands.");
 
-            string[] string_args = ParseArgs(parts, command.GetParametersLength());
-            object return_result = null;
-
-            if (command is ConsoleMethod)
-            {
-                var conMethod  = (ConsoleMethod)command;
-                return_result = DeveloperConsole.ExecuteConMethod(conMethod, TryCastArguments(string_args, conMethod.MethodInfo.GetParameters()));
-            }
-            else if (command is ConsoleVariable)
-            {
-                var conVar = (ConsoleVariable)command;
-                return_result = DeveloperConsole.ExecuteConVar(conVar, TryCastArguments(string_args));
-            }
-
-            if (return_result != null)
-                DeveloperConsole.Print(return_result.ToString());
+            string_args = ParseArgs(parts, command.GetParametersLength());
         }
 
         public static string[] ParseArgs(string[] commandParts, int maxArgs)
@@ -87,21 +74,13 @@ namespace Farbod.DeveloperConsole
         {
             object[] result = new object[args.Length];
             for (int i = 0; i < args.Length; i++)
-            {
-
-                //First make sure the param is not a string
-                var t = methodParameters[i].ParameterType;
-                if (t == typeof(string))
-                    result[i] = args[i];
-                else
-                    TryCastArgument(args[i], out result[i]);
-            }
+                TryCastArgument(args[i], methodParameters[i].ParameterType, out result[i]);
 
             return result;
         }
 
         /// <summary>
-        /// Attempt to cast/parse a set of string arguments into any other primitive types
+        /// Attempt to cast/parse a set of string arguments into any possible primitive types
         /// </summary>
         public static object[] TryCastArguments(string[] args)
         {
@@ -118,8 +97,9 @@ namespace Farbod.DeveloperConsole
         /// <summary>
         /// Attempt to cast a string parameter into other primitive types
         /// </summary>
-        /// <param name="arg_string"></param>
-        /// <returns>Cast to non-string success</returns>
+        /// <param name="arg_string">The string to cast</param>
+        /// <param name="result">The cast result</param>
+        /// <returns>True if casting succeeded</returns>
         public static bool TryCastArgument(string arg_string, out object result)
         {
             //Boolean
@@ -148,6 +128,128 @@ namespace Farbod.DeveloperConsole
             return false;
         }
 
+
+        /// <summary>
+        /// Attempt to cast a string parameter into other primitive types
+        /// </summary>
+        /// <param name="arg_string">The string to cast</param>
+        /// <param name="targetType">The target type to cast to</param>
+        /// <param name="result">The cast result</param>
+        /// <returns>True if casting succeeded</returns>
+        public static bool TryCastArgument(string arg_string, Type targetType, out object result)
+        {
+            result = null;
+
+            // Handle null or empty
+            if (string.IsNullOrEmpty(arg_string))
+                return false;
+
+            // Check if target type is string (just return the string)
+            if (targetType == typeof(string))
+            {
+                result = arg_string;
+                return true;
+            }
+
+            // Boolean
+            if (targetType == typeof(bool) && bool.TryParse(arg_string, out bool result_bool))
+            {
+                result = result_bool;
+                return true;
+            }
+
+            // Integer (also handle other integer types)
+            if (targetType == typeof(int) && int.TryParse(arg_string, out int result_int))
+            {
+                result = result_int;
+                return true;
+            }
+            if (targetType == typeof(short) && short.TryParse(arg_string, out short result_short))
+            {
+                result = result_short;
+                return true;
+            }
+            if (targetType == typeof(byte) && byte.TryParse(arg_string, out byte result_byte))
+            {
+                result = result_byte;
+                return true;
+            }
+
+            // Float (also handle double and decimal)
+            if (targetType == typeof(float) && float.TryParse(arg_string, out float result_float))
+            {
+                result = result_float;
+                return true;
+            }
+            if (targetType == typeof(double) && double.TryParse(arg_string, out double result_double))
+            {
+                result = result_double;
+                return true;
+            }
+            if (targetType == typeof(decimal) && decimal.TryParse(arg_string, out decimal result_decimal))
+            {
+                result = result_decimal;
+                return true;
+            }
+
+            // Enum
+            if (targetType.IsEnum)
+            {
+                try
+                {
+                    // Try by name (case-insensitive)
+                    if (Enum.TryParse(targetType, arg_string, true, out object enumResult))
+                    {
+                        result = enumResult;
+                        return true;
+                    }
+
+                    // Try by numeric value
+                    if (int.TryParse(arg_string, out int intValue) && Enum.IsDefined(targetType, intValue))
+                    {
+                        result = Enum.ToObject(targetType, intValue);
+                        return true;
+                    }
+
+                    // For flags enum with comma-separated values
+                    if (arg_string.Contains(","))
+                    {
+                        long combinedValue = 0;
+                        foreach (string flag in arg_string.Split(','))
+                        {
+                            if (Enum.TryParse(targetType, flag.Trim(), true, out object flagResult))
+                            {
+                                combinedValue |= Convert.ToInt64(flagResult);
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        result = Enum.ToObject(targetType, combinedValue);
+                        return true;
+                    }
+
+                    return false;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            // Any other type (fallback)
+            try
+            {
+                result = Convert.ChangeType(arg_string, targetType);
+                return true;
+            }
+            catch
+            {
+                result = arg_string;
+                return false;
+            }
+        }
     }
 }
 
