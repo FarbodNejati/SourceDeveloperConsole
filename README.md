@@ -1,13 +1,10 @@
 # About
 
-A Source-Engine type runtime developer console for executing commands, and setting variables.
+A SourceEngine-type  developer console for executing commands, and setting variables.
 This tool can be use in Editor AND RUNTIME!
 You can access the Built-In editor window from `Toolbar > Tools > Developer Console`.
 
 ![The Built-In Editor window which can be used immediately](developerConsoleEditorWindow.png)
-
-## How it works
-The static `DeveloperConsole` class is the one that executes the commands and has the callbacks for logging things to the console.
 
 ### Registering commands
 you can register a console method command by adding the `ConsoleMethod` attribute to a **static** method :
@@ -51,6 +48,12 @@ You can use the provided `DeveloperConsole` element within your own menus, and a
 
 Feel free to look at the source code of the `DeveloperConsole.cs` element to see how to use features such as autocomplete.
 
+## How it works
+The static `DeveloperConsole` class is the one that executes the commands and has the callbacks for logging things to the console.
+
+The `CommandParser` class is in charge of parsing inputted strings into usable commands and arguments
+
+And the `ConsoleSuggestionHandler` class is for providing autocomplete suggestions, and command usage hints you type, that tell you what arguments to type out, and if they are valid or not.
 
 * Created by [Farbod Nejati](https://github.com/FarbodNejati)
 * Inspired by [ZeroByter](https://github.com/ZeroByter/SourceConsole/tree/master)

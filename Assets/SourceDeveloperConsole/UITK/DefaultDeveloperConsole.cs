@@ -1,11 +1,6 @@
-using NUnit.Framework.Constraints;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.Windows;
-using static UnityEditor.Progress;
 
 namespace Farbod.DeveloperConsole
 {
@@ -13,7 +8,7 @@ namespace Farbod.DeveloperConsole
 #if UNITY_2023_2_OR_NEWER
     [UxmlElement]
 #endif
-    public partial class DefaultDeveloperConsole : VisualElement
+    public partial class DefaultDeveloperConsole : VisualElement, IConsoleGUI
     {
 #if !UNITY_2023_2_OR_NEWER
         public new class UxmlFactory : UxmlFactory<DefaultDeveloperConsole, UxmlTraits> { }
@@ -154,7 +149,7 @@ namespace Farbod.DeveloperConsole
         {
             //Display any logs from the developer console
             DeveloperConsole.OnLog += (log, type) => CreateLogEntry(log, type);
-
+            DeveloperConsole.OnClearLog += ClearLogs;
 
             // Submit button
             m_SubmitButton.clicked += () => SubmitCommand();
@@ -299,11 +294,12 @@ namespace Farbod.DeveloperConsole
             DeveloperConsole.ExecuteCommand(input);
             m_Input.value = "";
         }
+
         /// <summary>
         /// Create a new entry in the log view.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="logType"></param>
+        /// <param name="text">The text of this entry</param>
+        /// <param name="logType">How this entry is displayed</param>
         public void CreateLogEntry(string text, ConsoleLogType logType = ConsoleLogType.standard)
         {
             Label entry = new Label(text);
@@ -328,13 +324,10 @@ namespace Farbod.DeveloperConsole
         /// <summary>
         /// Clears this console's logs.
         /// </summary>
-        public new void Clear()
+        public void ClearLogs()
         {
             m_Log.Clear();
         }
-
-        
-        
     }
 }
 
