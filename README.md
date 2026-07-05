@@ -1,13 +1,13 @@
 # About
 
 A SourceEngine-type  developer console for executing commands, and setting variables.
-This tool can be use in Editor AND RUNTIME!
+This tool can be use in the Editor and in **runtime builds**.
 You can access the Built-In editor window from `Toolbar > Tools > Developer Console`.
 
 ![The Built-In Editor window which can be used immediately](Preview.png)
 
 ### Installation
-Install this package by opening the packag manager and installing by git url and emtering the following:
+Install this package by opening the packag manager and installing by git url and entering the following:
 
 ```
 https://github.com/FarbodNejati/SourceDeveloperConsole.git
@@ -17,8 +17,12 @@ https://github.com/FarbodNejati/SourceDeveloperConsole.git
 you can register a console method command by adding the `ConsoleMethod` attribute to a **static** method :
 ```cs
 [ConsoleMethod("pow", "raise a to the power of b.")]
-public static int CalculatePower(int a, int b) => Math.Pow(a, b); //The return object will be printed onto the console
+public static int CalculatePower(int a, int b){
+    //The return object will be printed onto the console gui
+    Math.Pow(a, b);
+}
 ```
+
 
 ### Registering Console-Variables
 you can register a console console variable by adding the `ConsoleVariable` attribute to a Field or Property:
@@ -51,11 +55,11 @@ public static int GameDifficulty
 
 
 ## Runtime User-Interface
-You can use the provided `DefaultDeveloperConsole` element within your own menus, and apply your own custom styling; or build a custom interface to interact with this class using the UI-Toolkit, UGUI or the classic Gameobject UI Canvas and monobehaviors.
+You can use the provided `DefaultDeveloperConsole` element within your own menus, and apply your own custom styling; or build a custom interface to interact with this class using the UI-Toolkit, UGUI, or.. anything!
 
-I'm currently using the provided UIElement in ny own project, just with ny own styling to make it look unique.
+I'm currently using the provided UIElement in my own game, just with my own styling to make it look unique.
 
-Feel free to look at the source code of the `DeveloperConsole.cs` element to see how to use features such as autocomplete.
+Feel free to look at the source code of the `Runtime/UXMLElements/DefaultDeveloperConsole.cs` element to see how to use features such as autocomplete.
 
 ## How it works
 * The static `DeveloperConsole` class is the one that executes the commands and has the callbacks for logging things to the console.
