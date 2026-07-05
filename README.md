@@ -6,6 +6,11 @@ You can access the Built-In editor window from `Toolbar > Tools > Developer Cons
 
 ![The Built-In Editor window which can be used immediately](Preview.png)
 
+### Installation
+Install this package by opening the packag manager and installing by git url and emtering the following:
+
+`https://github.com/FarbodNejati/SourceDeveloperConsole.git`
+
 ### Registering commands
 you can register a console method command by adding the `ConsoleMethod` attribute to a **static** method :
 ```cs
