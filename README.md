@@ -45,16 +45,18 @@ public static int GameDifficulty
 
 ## Runtime User-Interface
 You can use the provided `DeveloperConsole` element within your own menus, and apply your own custom styling; or build a custom interface to interact with this class using the UI-Toolkit, UGUI or the classic Gameobject UI Canvas and monobehaviors.
-![The Built-In Element that can be used in the UI-Builder](UIBuilderExample.png)
 
 Feel free to look at the source code of the `DeveloperConsole.cs` element to see how to use features such as autocomplete.
 
 ## How it works
-The static `DeveloperConsole` class is the one that executes the commands and has the callbacks for logging things to the console.
+* The static `DeveloperConsole` class is the one that executes the commands and has the callbacks for logging things to the console.
 
-The `CommandParser` class is in charge of parsing inputted strings into usable commands and arguments, which are then executed by the `DeveloperConsole`
+* The `CommandParser` class is in charge of parsing inputted strings into usable commands and arguments, which are then executed by the `DeveloperConsole`
 
-And the `ConsoleSuggestionHandler` class is for providing auto-completion suggestions, and command usage hints as you type, that tells you what arguments to type, and helps you see if your input is valid or not by color coding the hint text. (exaples: command names, enum types, boolean true/false)
+* And the `ConsoleSuggestionHandler` class is for providing auto-completion suggestions, and command usage hints as you type, that tells you what arguments to type, and helps you see if your input is valid or not by color coding the hint text. (exaples: command names, enum types, boolean true/false)
+
+
+---
 
 * Created by [Farbod Nejati](https://github.com/FarbodNejati)
 * Inspired by [ZeroByter](https://github.com/ZeroByter/SourceConsole/tree/master)

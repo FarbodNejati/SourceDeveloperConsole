@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/SourceDeveloperConsole/UITK/Resources/Style/RuntimeConsoleStyle.uss?fileID=7433441132597879392&amp;guid=ce9c938ea0c415143837219b0c1e5fc4&amp;type=3#RuntimeConsoleStyle"/>
+    <Farbod.DeveloperConsole.DefaultDeveloperConsole/>
+</ui:UXML>
