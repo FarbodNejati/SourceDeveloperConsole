@@ -5,5 +5,12 @@
   "description": "A Source-Engine inspired developer console for executing commands, in editor and runtime.",
   "author": "Farbod Nejati",
   "unity": "2022.2",
-  "dependencies": {}
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "Basic Commands Example",
+      "description": "Shows how to set up ConsoleMethods and ConsoleVariables.",
+      "path": "Samples~/BasicCommands"
+    }
+  ]
 }

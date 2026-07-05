@@ -46,7 +46,11 @@ namespace Farbod.DeveloperConsole
         {
             var stopwatch = Stopwatch.StartNew();//Measure operation time
 
-            var assemblies = new Assembly[] { Assembly.GetAssembly(typeof(DeveloperConsole)) };
+            var consoleAssembly = typeof(DeveloperConsole).Assembly;
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => a.GetReferencedAssemblies().Any(r => r.FullName == consoleAssembly.FullName)
+                        || a == consoleAssembly)
+            .ToArray();
 
             List<string> new_index = new();
             int changes = 0;
