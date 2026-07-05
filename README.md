@@ -4,7 +4,7 @@ A SourceEngine-type  developer console for executing commands, and setting varia
 This tool can be use in Editor AND RUNTIME!
 You can access the Built-In editor window from `Toolbar > Tools > Developer Console`.
 
-![The Built-In Editor window which can be used immediately](developerConsoleEditorWindow.png)
+![The Built-In Editor window which can be used immediately](Preview.png)
 
 ### Registering commands
 you can register a console method command by adding the `ConsoleMethod` attribute to a **static** method :
@@ -44,7 +44,9 @@ public static int GameDifficulty
 
 
 ## Runtime User-Interface
-You can use the provided `DeveloperConsole` element within your own menus, and apply your own custom styling; or build a custom interface to interact with this class using the UI-Toolkit, UGUI or the classic Gameobject UI Canvas and monobehaviors.
+You can use the provided `DefaultDeveloperConsole` element within your own menus, and apply your own custom styling; or build a custom interface to interact with this class using the UI-Toolkit, UGUI or the classic Gameobject UI Canvas and monobehaviors.
+
+I'm currently using the provided UIElement in ny own project, just with ny own styling to make it look unique.
 
 Feel free to look at the source code of the `DeveloperConsole.cs` element to see how to use features such as autocomplete.
 
