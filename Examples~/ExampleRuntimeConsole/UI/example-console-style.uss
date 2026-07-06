@@ -1,0 +1,257 @@
+:root {
+    -unity-font-definition: url("project://database/Assets/SourceDeveloperConsole/ExampleRuntimeConsole/LUCON.TTF?fileID=12800000&guid=da162301614b994488dc9ae9fcb01fe6&type=3#LUCON");
+    --colors-background: rgba(81, 89, 76, 0.94);
+    --unity-colors-default-text: rgb(215, 215, 215);
+    --colors-border: rgb(108, 117, 100);
+    --colors-border_accent: rgb(54, 60, 48);
+    --border-radius: 2px;
+    --colors-field: rgba(65, 70, 61, 0.88);
+    --unity-colors-button-background: rgba(78, 88, 71, 0.85);
+    --unity-colors-button-background-hover: rgb(82, 95, 74);
+    --unity-colors-button-background-pressed: rgb(54, 64, 45);
+    --unity-colors-button-border: rgb(108, 117, 100);
+    --unity-colors-button-border_accent: rgb(54, 60, 48);
+    --unity-colors-button-border-focus: rgb(140, 67, 30);
+    --unity-colors-highlight-background: rgb(245, 228, 88);
+    --unity-colors-button-border-hover: rgb(245, 228, 88);
+    --unity-colors-input_field-border-focus: rgb(245, 228, 88);
+    word-spacing: -19px;
+    --unity-colors-error-text: rgb(243, 27, 0);
+}
+
+.console__wrapper {
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+}
+
+#console {
+    background-color: var(--colors-background);
+    padding-top: 6px;
+    padding-right: 6px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    border-top-color: var(--colors-border);
+    color: var(--unity-colors-default-text);
+    border-left-color: var(--colors-border);
+    border-bottom-color: var(--colors-border_accent);
+    border-right-color: var(--colors-border_accent);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+#console .unity-scroll-view__content-viewport {
+    background-color: var(--colors-field);
+    border-top-color: var(--colors-border_accent);
+    border-right-color: var(--colors-border);
+    border-left-color: var(--colors-border_accent);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-color: var(--colors-border);
+    padding-left: 6px;
+}
+
+.unity-base-text-field__input {
+    background-color: var(--colors-field);
+    border-top-color: var(--colors-border_accent);
+    border-right-color: var(--colors-border);
+    border-left-color: var(--colors-border_accent);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-color: var(--colors-border);
+}
+
+#console .developer-console__submit-button {
+    margin-left: 4px;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+#console TextField.developer-console__input-field .unity-base-text-field__input {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: var(--colors-field);
+    padding-top: 2px;
+    padding-right: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+}
+
+#console .developer-console__input-row {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 6px;
+}
+
+.unity-base-text-field__input {
+    background-color: var(--unity-colors-input_field-background);
+    border-radius: var(--unity-metrics-fields-border_radius);
+    max-height: 100%;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+.unity-base-text-field__input:hover:enabled {
+    border-radius: var(--unity-metrics-fields-border_radius);
+    border-top-color: var(--unity-colors-input_field-border-hover);
+    border-right-color: var(--unity-colors-input_field-border-hover);
+    border-bottom-color: var(--unity-colors-input_field-border-hover);
+    border-left-color: var(--unity-colors-input_field-border-hover);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+}
+
+.unity-base-text-field:enabled:focus .unity-base-text-field__input {
+    border-radius: var(--unity-metrics-fields-border_radius);
+    --unity-cursor-color: var(--unity-colors-input_field-border-focus);
+    border-top-color: var(--unity-colors-input_field-border-focus);
+    border-right-color: var(--unity-colors-input_field-border-focus);
+    border-bottom-color: var(--unity-colors-input_field-border-focus);
+    border-left-color: var(--unity-colors-input_field-border-focus);
+}
+
+.unity-button {
+    border-radius: var(--unity-metrics-fields-border_radius);
+    padding-top: 6px;
+    padding-right: 4px;
+    padding-bottom: 6px;
+    padding-left: 4px;
+    border-right-color: var(--unity-colors-button-border_accent);
+    border-bottom-color: var(--unity-colors-button-border_accent);
+    border-top-color: var(--unity-colors-button-border);
+    border-left-color: var(--unity-colors-button-border);
+    justify-content: center;
+    flex-direction: row;
+    background-color: var(--unity-colors-button-background);
+}
+
+.unity-button:enabled:hover {
+    border-right-color: var(--unity-colors-button-border-hover);
+    border-bottom-color: var(--unity-colors-button-border-hover);
+    border-top-color: var(--unity-colors-button-border-hover);
+    border-left-color: var(--unity-colors-button-border-hover);
+    background-color: var(--unity-colors-button-background-hover);
+}
+
+.unity-button:enabled:active {
+    border-right-color: var(--unity-colors-button-border-pressed);
+    border-bottom-color: var(--unity-colors-button-border-pressed);
+    border-top-color: var(--unity-colors-button-border-pressed);
+    border-left-color: var(--unity-colors-button-border-pressed);
+    background-color: var(--unity-colors-button-background-pressed);
+}
+
+.unity-button:enabled:focus {
+    border-right-color: var(--unity-colors-button-border-focus);
+    border-bottom-color: var(--unity-colors-button-border-focus);
+    border-top-color: var(--unity-colors-button-border-focus);
+    border-left-color: var(--unity-colors-button-border-focus);
+}
+
+#console .developer-console__autocomplete {
+    background-color: var(--colors-background);
+    border-top-color: var(--colors-border);
+    border-left-color: var(--colors-border);
+    border-bottom-color: var(--colors-border_accent);
+    border-right-color: var(--colors-border_accent);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+    top: 100%;
+    bottom: auto;
+    flex-direction: column;
+    font-size: 12px;
+}
+
+#console .developer-console__autocomplete > Label {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: var(--unity-colors-button-background);
+    opacity: 1;
+    color: rgba(215, 215, 215, 0.74);
+    padding-top: 3px;
+    padding-bottom: 3px;
+    -unity-text-align: middle-left;
+}
+
+#console .developer-console__autocomplete > Label.replacement {
+    transition-duration: 0.2s, 0.5s;
+    transition-property: all, padding-left;
+    transition-timing-function: ease-out, ease-out-elastic;
+    color: var(--unity-colors-default-text);
+}
+
+#console .developer-console__autocomplete > Label.replacement.active {
+    padding-left: 11px;
+    -unity-font-style: bold;
+    background-color: var(--unity-colors-button-background-hover);
+}
+
+.header {
+    flex-direction: row;
+    align-items: center;
+    padding-left: 2px;
+    padding-right: 4px;
+    padding-bottom: 2px;
+    justify-content: space-between;
+}
+
+.header #close_button {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    width: 22px;
+    height: 22px;
+    font-size: 20px;
+    -unity-text-align: middle-center;
+    align-items: center;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.header Label {
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    -unity-text-align: middle-left;
+}

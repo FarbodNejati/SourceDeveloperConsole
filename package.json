@@ -8,6 +8,11 @@
   "dependencies": {},
   "samples": [
     {
+      "displayName": "Example Runtime Console",
+      "description": "A pre-built prefab that you can drop into your game!",
+      "path": "Samples~/ExampleRuntimeConsole"
+    },
+    {
       "displayName": "Basic Commands Example",
       "description": "Shows how to set up ConsoleMethods and ConsoleVariables.",
       "path": "Samples~/BasicCommands"

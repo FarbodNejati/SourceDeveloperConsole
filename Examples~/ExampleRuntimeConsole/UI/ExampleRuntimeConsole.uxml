@@ -1,0 +1,12 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/SourceDeveloperConsole/ExampleRuntimeConsole/UI/example-console-style.uss?fileID=7433441132597879392&amp;guid=9dce2112376fd2249ad2993bd21b8d27&amp;type=3#example-console-style"/>
+    <ui:VisualElement class="console__wrapper">
+        <ui:VisualElement name="console" style="width: 910px; height: 609px; font-size: 16px; align-self: flex-end; margin-top: 24px; margin-right: 24px; margin-bottom: 24px; margin-left: 24px;">
+            <ui:VisualElement name="header" class="header">
+                <ui:Label text="CONSOLE" class="l"/>
+                <ui:Button text="x" name="close_button" class="close_button"/>
+            </ui:VisualElement>
+            <Farbod.DeveloperConsole.DefaultDeveloperConsole/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

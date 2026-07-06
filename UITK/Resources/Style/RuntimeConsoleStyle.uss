@@ -14,7 +14,6 @@
 
 .developer-console .developer-console__log .unity-scroll-view__content-viewport {
     background-color: var(--unity-colors-input_field-background);
-    background-position-y: top 0;
     border-top-width: 1px;
     border-right-width: 1px;
     border-bottom-width: 1px;
