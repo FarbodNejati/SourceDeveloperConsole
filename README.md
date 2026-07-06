@@ -20,7 +20,7 @@ https://github.com/FarbodNejati/SourceDeveloperConsole.git
 # Quick Start
 The Built-In editor window can be accessed from `Toolbar > Tools > Developer Console`.
 
-A pre-built, ready to use Runtime Console prefab is available inside the "Example Runtime Console" sample which can be installed from the package manager, or found in the "Examples~" folder of the repository.
+A pre-built, **ready to use** Runtime Console prefab is available inside the "Example Runtime Console" sample which can be installed from the package manager, or found in the `Samples~` folder of the repository.
 
 ## Registering Commands
 You can register a method command by adding the `ConsoleMethod` attribute to a **static** method. example:
