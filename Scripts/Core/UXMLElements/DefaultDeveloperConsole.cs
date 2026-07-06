@@ -249,6 +249,7 @@ namespace Farbod.DeveloperConsole
             if (!string.IsNullOrEmpty(suggestionHandler.current_hint))
             {
                 Label info = new Label(suggestionHandler.current_hint);
+		info.enableRichText = true;
                 m_SuggestionPopup.Add(info);
             }
 
@@ -298,7 +299,7 @@ namespace Farbod.DeveloperConsole
             m_Input.SelectNone();
 #else
             // In older versions, use Select to move cursor
-            m_Input.Select(newString.Length, 0);
+            m_Input.SelectRange(newString.Length, 0);
 #endif
 
             HideSuggestionPopup();
@@ -327,7 +328,12 @@ namespace Farbod.DeveloperConsole
         public void CreateLogEntry(string text, ConsoleLogType logType = ConsoleLogType.standard)
         {
             Label entry = new Label(text);
-            entry.selection.isSelectable = true;
+
+#if UNITY_2023_2_OR_NEWER
+            entry.selection.isSelectable = true; //make text selectable for copying console logs
+#else
+            entry.enableRichText = true;
+#endif
 
             //Assign css classes
             switch (logType)

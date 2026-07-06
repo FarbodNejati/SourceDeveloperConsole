@@ -1,10 +1,10 @@
 {
   "name": "com.farbod-nejati.source-developer-console",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "displayName": "Source Developer Console",
-  "description": "A Source-Engine inspired developer console for executing commands, in editor and runtime.",
+  "description": "A Source-Engine inspired developer console, for runtime builds and the editor.",
   "author": "Farbod Nejati",
-  "unity": "2022.2",
+  "unity": "2021.3",
   "dependencies": {},
   "samples": [
     {

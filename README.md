@@ -2,23 +2,25 @@
 
 A SourceEngine-type developer console for executing commands, and setting variables.
 This tool can be used in the Editor and in **runtime builds**.
-You can access the Built-In editor window from `Toolbar > Tools > Developer Console`.
 
 ![The Built-In Editor window which can be used immediately](https://github.com/FarbodNejati/SourceDeveloperConsole/blob/main/Preview.png)
 
-### Installation
+# Installation
 Install this package by opening the package  manager and installing by git url and entering the following:
 
 ```
 https://github.com/FarbodNejati/SourceDeveloperConsole.git
 ```
 
-#### Requirements:
-* UI Toolkit package (built-in, auto
-* Unity 2021.3 or newer
+### Requirements:
+* Unity 2021.3 or newer (Up to date for Unity 6000)
+* UIElements (built-in unity package)
 
+---
+#Quick Start
+You can access the Built-In editor window from `Toolbar > Tools > Developer Console`.
 
-### Registering Commands
+## Registering Commands
 You can register a method command by adding the `ConsoleMethod` attribute to a **static** method. example:
 ```cs
 [ConsoleMethod("pow", "raise a to the power of b.")]
@@ -29,7 +31,7 @@ public static int CalculatePower(int a, int b){
 ```
 
 
-### Registering Console-Variables
+## Registering Console-Variables
 You can register a variable command by adding the `ConsoleVariable` attribute to a static Field or Property, example:
 ```cs
 // You can get/set fields through commands
