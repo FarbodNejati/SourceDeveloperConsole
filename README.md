@@ -14,8 +14,8 @@ https://github.com/FarbodNejati/SourceDeveloperConsole.git
 ```
 
 #### Requirements:
-* UI Toolkit package (built-in, auto
-* Unity 2021.3 or newer
+* Unity 2021.3 or newer (Up to date for Unity 6000)
+* UIElements (built-in unity package)
 
 
 ### Registering Commands

@@ -327,7 +327,10 @@ namespace Farbod.DeveloperConsole
         public void CreateLogEntry(string text, ConsoleLogType logType = ConsoleLogType.standard)
         {
             Label entry = new Label(text);
-            entry.selection.isSelectable = true;
+
+#if UNITY_2023_2_OR_NEWER
+            entry.selection.isSelectable = true; //make text selectable for copying console logs
+#endif
 
             //Assign css classes
             switch (logType)
