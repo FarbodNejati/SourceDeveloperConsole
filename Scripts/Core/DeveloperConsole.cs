@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Farbod.DeveloperConsole
@@ -30,9 +31,20 @@ namespace Farbod.DeveloperConsole
         /// All indexed console commands as their string name
         /// </summary>
         public static List<string> command_index { get; private set; } = new();
+
+        /// <summary>
+        /// Subscribe to this event to recieve logs in your console gui.
+        /// </summary>
         public static event Action<string, ConsoleLogType> OnLog;
+
+        /// <summary>
+        /// Subscribe to this event to know when to clear your consone gui's logs.
+        /// </summary>
         public static event Action OnClearLog;
 
+        /// <summary>
+        /// Should exceptions and errors logged to the console include the full stack trace?
+        /// </summary>
         [ConsoleVariable("log_full_stack", "should the console show a full error traceback, or simply the name and message.", true)]
         public static bool ShowFullErrorStackTrace { get; set; } = false;
 
@@ -46,11 +58,7 @@ namespace Farbod.DeveloperConsole
         {
             var stopwatch = Stopwatch.StartNew();//Measure operation time
 
-            var consoleAssembly = typeof(DeveloperConsole).Assembly;
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => a.GetReferencedAssemblies().Any(r => r.FullName == consoleAssembly.FullName)
-                        || a == consoleAssembly)
-            .ToArray();
+            var assemblies = GetAssemblies();
 
             List<string> new_index = new();
             int changes = 0;
@@ -106,6 +114,9 @@ namespace Farbod.DeveloperConsole
             
         }
 
+        /// <summary>
+        /// Indexes commands if the command index is empty
+        /// </summary>
         public static void IndexCommandsIfNotIndexed()
         {
             if (console_methods == null || console_variables == null)
@@ -114,6 +125,10 @@ namespace Farbod.DeveloperConsole
             }
         }
 
+        /// <summary>
+        /// Parse and execute the provided input
+        /// </summary>
+        /// <param name="input"></param>
         public static void ExecuteCommand(string input)
         {
             try
@@ -184,6 +199,7 @@ namespace Farbod.DeveloperConsole
 
             return return_result;
         }
+
         public static object ExecuteConMethod(ConsoleMethod command, params object[] user_args)
         {
             //This code is for automatically putting in default parameter values if they exist and weren't specified explicitly by the user
@@ -218,6 +234,13 @@ namespace Farbod.DeveloperConsole
             //Return the commands return object
             return command.MethodInfo.ReturnType == null ? null : return_object;
         }
+        
+        /// <summary>
+        /// Return the value of a console variable, and set it ig a value is provided.
+        /// </summary>
+        /// <param name="conVariable"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static object ExecuteConVar(ConsoleVariable conVariable, object value)
         {
             //Set the value if needed
@@ -244,13 +267,22 @@ namespace Farbod.DeveloperConsole
             return conVariable.GetValue();
         }
 
+        /// <summary>
+        /// Log a standard message to the console.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         [ConsoleMethod("print", "log a message to the console.", executeInEditMode: true)]
-        public static void Print(string message)
+        public static void Print(object message)
         {
             if (message == null)
                 throw new ArgumentNullException("message");
-            OnLog.Invoke(message, ConsoleLogType.standard);
+            OnLog.Invoke(message.ToString(), ConsoleLogType.standard);
         }
+
+        /// <summary>
+        /// Log a message with error formatting to the console.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         [ConsoleMethod("error", "log an error to the console.", executeInEditMode: true)]
         public static void Error(string message)
         {
@@ -259,6 +291,9 @@ namespace Farbod.DeveloperConsole
             OnLog.Invoke(message, ConsoleLogType.error);
         }
 
+        /// <summary>
+        /// Log an exception to the console.
+        /// </summary>
         public static void Error(System.Exception exception)
         {
             if (ShowFullErrorStackTrace)
@@ -267,6 +302,12 @@ namespace Farbod.DeveloperConsole
                 Error($"{exception.GetType().Name}: {exception.Message}");
         }
 
+
+        /// <summary>
+        /// Log a messge with warning formatting to the console.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         [ConsoleMethod("warn", "log an error to the console.", executeInEditMode: true)]
         public static void Warn(string message)
         {
@@ -275,34 +316,48 @@ namespace Farbod.DeveloperConsole
             OnLog.Invoke(message, ConsoleLogType.warning);
         }
 
+        /// <summary>
+        /// ist all commands, Or etrieve information for a specific command
+        /// </summary>
+        /// <param name="command_name"></param>
         [ConsoleMethod("help", "List all commands, or log the information of a command.", executeInEditMode: true)]
-        public static void Help(string commandName = null)
+        public static string Help(string command_name = null)
         {
             //If no name is given, list all commands
-            if (commandName == null || commandName.Trim() == "")
+            if (command_name == null || command_name.Trim() == "")
             {
-                Print(string.Join("\n", command_index));
-                return;
+                string commandsList = string.Join("\n", command_index);
+                return $"use `help {command_name}` to get info on a specific command " +
+                    $"\n\nCommands: <color=\"yellow\">\n" +
+                    commandsList;
             }
 
 
-            var command = CommandParser.ParseCommand(commandName);
+            var command = CommandParser.ParseCommand(command_name);
             if (command == null)
             {
-                Error("Unknown command, Use 'help' to get a list of all available commands.");
-                return;
+                throw new ArgumentException("Unknown command, Use 'help' to get a list of all available commands.");
             }
 
             //Description and Usage
-            Print($"Description: \"{command.GetDescription()??"n/a"}\"\n<color=\"yellow\">Usage:\n <color=\"grey\">{command.GetUsage()}");
+            return $"Description: \"{command.GetDescription()??"n/a"}\"\n<color=\"yellow\">Usage: <color=\"grey\">{command.GetUsage()}";
         }
 
+        /// <summary>
+        /// Clears the log of console GUIs subscribed to the OnClearLog event
+        /// </summary>
         [ConsoleMethod("clear", "Clear all terminals.", executeInEditMode: true)]
         public static void ClearLog()
         {
             OnClearLog.Invoke();
         }
 
+        /// <summary>
+        /// Retrieves all ConsoleMethods in the provided assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        /// <returns></returns>
+        /// <exception cref="NonStaticCommandException"></exception>
         private static ConsoleMethod[] FindAllMethodAttributes(Assembly[] assemblies)
         {
             List<ConsoleMethod> result = new();
@@ -311,12 +366,13 @@ namespace Farbod.DeveloperConsole
                 var methods = assembly.GetTypes().SelectMany(t => t.GetMethods()).Where(m => m.GetCustomAttributes(typeof(ConsoleMethod), true).Length > 0);
                 foreach (var method in methods)
                 {
-                    //Throw an error for non static methods
-                    if (!method.IsStatic)
-                        throw new NonStaticCommandException($"Command methods must be static.");
-
                     ConsoleMethod attribute = GetAttribute<ConsoleMethod>(method);
                     attribute.MethodInfo = method;
+
+                    //Skip non static methods
+                    if (!ValidateMethodAttribute(attribute))
+                        continue;
+
                     result.Add(attribute);
                 }
             }
@@ -335,34 +391,64 @@ namespace Farbod.DeveloperConsole
                 return default(T);
             }
         }
+
+        /// <summary>
+        /// Retrieves all ConsoleMethods in the provided assemblies
+        /// </summary>
+        /// <param name="assemblies"></param>
+        /// <returns></returns>
         private static ConsoleVariable[] FindAllConVarAttributes(Assembly[] assemblies)
         {
             List<ConsoleVariable> result = new();
+
             foreach (var assembly in assemblies)
             {
-                //Properties
-                var props = assembly.GetTypes().SelectMany(t => t.GetProperties()).Where(m => m.GetCustomAttributes(typeof(ConsoleVariable), true).Length > 0);
+                // --- Properties ---
+                var props = assembly.GetTypes()
+                    .SelectMany(t => t.GetProperties())
+                    .Where(m => m.GetCustomAttributes(typeof(ConsoleVariable), true).Length > 0);
+
                 foreach (var prop in props)
                 {
-                    ConsoleVariable attribute = GetConVarAttribute<ConsoleVariable>(prop);
+                    var attribute = GetConVarAttribute<ConsoleVariable>(prop);
                     attribute.PropertyInfo = prop;
+
+                    //Skip non static methods
+                    if (!ValidatePropertyAttribute(attribute))
+                        continue;
+
                     result.Add(attribute);
                 }
 
-                //Fields
-                var fields = assembly.GetTypes().SelectMany(t => t.GetFields()).Where(m => m.GetCustomAttributes(typeof(ConsoleVariable), true).Length > 0);
+                // --- Fields ---
+                var fields = assembly.GetTypes()
+                    .SelectMany(t => t.GetFields())
+                    .Where(m => m.GetCustomAttributes(typeof(ConsoleVariable), true).Length > 0);
+
                 foreach (var field in fields)
                 {
-                    ConsoleVariable attribute = GetConVarAttribute<ConsoleVariable>(field);
+                    var attribute = GetConVarAttribute<ConsoleVariable>(field);
                     attribute.FieldInfo = field;
+
+                    // Check static-ness
+                    if (!ValidateFieldAttribute(attribute))
+                        continue;
+
                     result.Add(attribute);
                 }
             }
 
             return result.ToArray();
+        }
 
-
-
+        private static Assembly[] GetAssemblies()
+        {
+            var consoleAssembly = typeof(DeveloperConsole).Assembly;
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => a.GetReferencedAssemblies().Any(r => r.FullName == consoleAssembly.FullName)
+                        || a == consoleAssembly)
+            .ToArray();
+            return assemblies;
         }
 
         public static T GetConVarAttribute<T>(FieldInfo field) where T : ConsoleVariable
@@ -387,171 +473,64 @@ namespace Farbod.DeveloperConsole
         }
 
 
+        private static bool ValidateMethodAttribute(ConsoleMethod attribute)
+        {
+            if (attribute.MethodInfo.IsStatic)
+                return true;
 
-        private class RepeatedCommandException : Exception
-        {
-            public RepeatedCommandException(string message) : base(message) { }
+#if UNITY_EDITOR
+            ShowErrorMessageWithPath(attribute, attribute.MethodInfo, attribute.sourceFilePath, attribute.sourceLine);
+#endif
+            return false;
         }
-        private class NonStaticCommandException : Exception
+
+        private static bool ValidatePropertyAttribute(ConsoleVariable attribute)
         {
-            public NonStaticCommandException(string message) : base(message) { }
+            var prop = attribute.PropertyInfo;
+            if (prop == null)
+                return false;
+
+            var getMethod = prop.GetGetMethod();
+
+            //Return true if static
+            if (getMethod != null && getMethod.IsStatic)
+                return true;
+
+#if UNITY_EDITOR
+            ShowErrorMessageWithPath(attribute, prop, attribute.sourceFilePath, attribute.sourceLine);
+#endif
+            return false;
+        }
+
+        private static bool ValidateFieldAttribute(ConsoleVariable attribute)
+        {
+            var field = attribute.FieldInfo;
+
+            //Return true if static
+            if (field != null && field.IsStatic)
+                return true;
+
+#if UNITY_EDITOR
+            ShowErrorMessageWithPath(attribute, field, attribute.sourceFilePath, attribute.sourceLine);
+#endif
+            return false;
+        }
+
+        private static void ShowErrorMessageWithPath(IConsoleCommand command,MemberInfo info, string path, int line)
+        {
+            Warn($"Skipping non static command '{command.GetName()}'");
+
+            string link = $"<color=#40a0ff><link=\"href='{path}' line='{line}'\">{path}:{line}</link></color>";
+            UnityEngine.Debug.LogError($"The command {info.Name} is not static.\n(at {link})");
         }
     }
-
-    public interface IConsoleCommand
+    public class RepeatedCommandException : Exception
     {
-        int GetParametersLength();
-        bool CanExecuteInEditMode();
-        string GetName();
-
-        /// <summary>
-        /// The amount of variables this console command accepts
-        /// </summary>
-        string GetDescription();
-
-        string GetUsage();
+        public RepeatedCommandException(string message) : base(message) { }
     }
-
-    /// <summary>
-    /// Console methods are used to invoke static methods by entering their name into the console.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class ConsoleMethod : Attribute, IConsoleCommand
+    public class NonStaticCommandException : Exception
     {
-        public string NameOverride { get; private set; }
-        public string Description { get; private set; }
-
-        /// <summary>
-        /// Is this command allowed to be executed in edit-mode
-        /// </summary>
-        public bool ExecuteInEditMode { get; private set; }
-        public bool CanExecuteInEditMode() => ExecuteInEditMode;
-
-        public MethodInfo MethodInfo { get; set; }
-
-        public ConsoleMethod(string nameOverride = null, string description = null, bool executeInEditMode = false)
-        {
-            NameOverride = nameOverride.Trim().ToLower();
-            Description = description;
-            ExecuteInEditMode = executeInEditMode;
-        }
-
-        /// <summary>
-        /// The name of this console command, that is used to invoke it (fully lowercase)
-        /// </summary>
-        /// <returns>Returns custom name if available, otherwise returns method name</returns>
-        public string GetName()
-        {
-            return string.IsNullOrEmpty(NameOverride) ? MethodInfo.Name.ToLower() : NameOverride;
-        }
-
-        /// <summary>
-        /// A short description explaining the use of this command
-        /// </summary>
-        public string GetDescription() => Description;
-
-        /// <summary>
-        /// The amount of variables this console command accepts
-        /// </summary>
-        public int GetParametersLength() => MethodInfo.GetParameters().Length;
-
-        public string GetUsage()
-        {
-            var methodParams = MethodInfo.GetParameters();
-            string[] paramsUsage = new string[methodParams.Length];
-
-            for (int i = 0; i < paramsUsage.Length; i++)
-            {
-                string optional = methodParams[i].IsOptional ? "(optional)" : "";
-                paramsUsage[i] = $"<{methodParams[i].Name}:{methodParams[i].ParameterType.Name}{optional}>";
-            }
-
-            return ($"{GetName()} {string.Join(" ", paramsUsage)}");
-        }
-
-        
-    }
-
-    /// <summary>
-    /// A console variable.
-    /// <para>
-    /// Valid Settable ConVars (fields, or properties with setter methods) can be set by simply entering the name of the convar followed by the desired value : [convar] [value]
-    /// </para>
-    /// 
-    /// <para>
-    /// To get the value of a ConVar you must simply enter its name in the console : [convar]
-    /// </para>
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
-    public class ConsoleVariable : Attribute, IConsoleCommand
-    {
-        public string NameOverride { get; private set; }
-        public string Description { get; private set; }
-
-        public bool ExecuteInEditMode { get; private set; }
-        public bool CanExecuteInEditMode() => ExecuteInEditMode;
-
-        /// <summary>
-        /// whether this conVar has a valid setter
-        /// </summary>
-        public bool CanBeSet => (FieldInfo != null || (PropertyInfo != null && PropertyInfo.GetSetMethod(false) != null));
-
-        /// <summary>
-        /// The object type of this variable
-        /// </summary>
-        public Type VariableType => PropertyInfo?.PropertyType ?? FieldInfo?.FieldType;
-
-        public FieldInfo FieldInfo { get; set; }
-        public PropertyInfo PropertyInfo { get; set; }
-
-        public ConsoleVariable(string nameOverride = null, string description = null, bool executeInEditMode = false)
-        {
-            NameOverride = nameOverride.Trim().ToLower();
-            Description = description;
-            ExecuteInEditMode = executeInEditMode;
-        }
-
-        /// <summary>
-        /// The name of this console command, that is used to get/set it (fully lowercase)
-        /// </summary>
-        /// <returns>Returns custom name if available, otherwise returns method name</returns>
-        public string GetName()
-        {
-            if (!string.IsNullOrEmpty(NameOverride))
-                return NameOverride;
-            if (PropertyInfo != null)
-                return PropertyInfo.Name.ToLower();
-            else
-                return FieldInfo.Name.ToLower();
-        }
-
-        /// <summary>
-        /// A short description explaining the use of this command
-        /// </summary>
-        public string GetDescription() => Description;
-
-        public string GetUsage()
-        {
-            if (CanBeSet)
-                return $"{GetName()} <value:{VariableType.Name}(optional)>";
-            else
-                return GetName();
-        }
-        /// <summary>
-        /// The amount of variables this console command accepts
-        /// </summary>
-        public int GetParametersLength() => CanBeSet ? 1 : 0;
-
-        public object GetValue() => PropertyInfo?.GetMethod.Invoke(null, null) ?? FieldInfo?.GetValue(null);
-        public void SetValue(object value)
-        {
-            if (PropertyInfo != null)
-                PropertyInfo.SetValue(null, value);
-            else
-                FieldInfo.SetValue(null, value);
-        }
-
-        
+        public NonStaticCommandException(string message) : base(message) { }
     }
 
     public class InvalidCommandException : Exception

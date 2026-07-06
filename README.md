@@ -1,38 +1,44 @@
 # About
 
-A SourceEngine-type  developer console for executing commands, and setting variables.
-This tool can be use in the Editor and in **runtime builds**.
+A SourceEngine-type developer console for executing commands, and setting variables.
+This tool can be used in the Editor and in **runtime builds**.
 You can access the Built-In editor window from `Toolbar > Tools > Developer Console`.
 
-![The Built-In Editor window which can be used immediately](Preview.png)
+![The Built-In Editor window which can be used immediately](https://github.com/FarbodNejati/SourceDeveloperConsole/blob/main/Preview.png)
 
 ### Installation
-Install this package by opening the packag manager and installing by git url and entering the following:
+Install this package by opening the package  manager and installing by git url and entering the following:
 
 ```
 https://github.com/FarbodNejati/SourceDeveloperConsole.git
 ```
 
-### Registering commands
-you can register a console method command by adding the `ConsoleMethod` attribute to a **static** method :
+#### Requirements:
+* UI Toolkit package (built-in, auto
+* Unity 2021.3 or newer
+
+
+### Registering Commands
+You can register a method command by adding the `ConsoleMethod` attribute to a **static** method. example:
 ```cs
 [ConsoleMethod("pow", "raise a to the power of b.")]
 public static int CalculatePower(int a, int b){
     //The return object will be printed onto the console gui
-    Math.Pow(a, b);
+    return (int)Math.Pow(a, b);
 }
 ```
 
 
 ### Registering Console-Variables
-you can register a console console variable by adding the `ConsoleVariable` attribute to a Field or Property:
+You can register a variable command by adding the `ConsoleVariable` attribute to a static Field or Property, example:
 ```cs
 // You can get/set fields through commands
 [ConsoleVariable("coin", "directly set the player's coin count")]
 public static int Coins = 200;
 ```
+Property example with non static backing fields:
 ```cs
-//Control properties with backing fields. the backing field could be on an object instance, while the property is static.
+//Control properties with backing fields. the backing field can be on an object instance, while the property is static.
 private int gameDifficulty = 0;
 [ConsoleVariable("difficulty", "the difficulty index of the game. (0 to 3)")]
 public static int GameDifficulty
@@ -55,13 +61,13 @@ public static int GameDifficulty
 
 
 ## Runtime User-Interface
-You can use the provided `DefaultDeveloperConsole` element within your own menus, and apply your own custom styling; or build a custom interface to interact with this class using the UI-Toolkit, UGUI, or.. anything!
+You can use the provided `DefaultDeveloperConsole` element within your own menus, and apply your own custom styling.
+This is the same UXMLElement used in the built-in editor window, and the element in use in my own games (just with custom styling for a unique look).
 
-I'm currently using the provided UIElement in my own game, just with my own styling to make it look unique.
+You can make your own custom GUI using UGUI or UIToolkit or.. anything else!
+Take a look at [DefaultDeveloperConsole.cs](https://github.com/FarbodNejati/SourceDeveloperConsole/blob/main/Scripts/Core/UXMLElements/DefaultDeveloperConsole.cs) to see how to implement your own custom GUI.
 
-Feel free to look at the source code of the `Runtime/UXMLElements/DefaultDeveloperConsole.cs` element to see how to use features such as autocomplete.
-
-## How it works
+## How It Works
 * The static `DeveloperConsole` class is the one that executes the commands and has the callbacks for logging things to the console.
 
 * The `CommandParser` class is in charge of parsing inputted strings into usable commands and arguments, which are then executed by the `DeveloperConsole`

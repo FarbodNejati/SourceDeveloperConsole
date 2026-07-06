@@ -39,7 +39,7 @@ namespace Farbod.DeveloperConsole
             // Attempt to parse this command
             command = ParseCommand(commandName);
             if(command == null)
-                throw new InvalidCommandException("command not found, use 'help' to see a all available commands, or reindex your commands.");
+                throw new InvalidCommandException("command not found, use 'help' to see a all available commands.");
 
             string_args = ParseArgs(parts, command.GetParametersLength());
         }

@@ -8,7 +8,7 @@ namespace Farbod.DeveloperConsole
 #if UNITY_2023_2_OR_NEWER
     [UxmlElement]
 #endif
-    public partial class DefaultDeveloperConsole : VisualElement, IConsoleGUI
+    public partial class DefaultDeveloperConsole : VisualElement
     {
 #if !UNITY_2023_2_OR_NEWER
         public new class UxmlFactory : UxmlFactory<DefaultDeveloperConsole, UxmlTraits> { }
@@ -167,26 +167,42 @@ namespace Farbod.DeveloperConsole
             {
                 SubmitCommand();
 
+#if UNITY_2023_2_OR_NEWER
                 focusController.IgnoreEvent(evt);
+#else
+                evt.PreventDefault();
+#endif
                 evt.StopImmediatePropagation();
             }
             if (evt.keyCode == KeyCode.Tab && SuggestionPopupActive && m_ActiveSuggestionIndex != -1)
             {
                 ApplySuggestion(m_SuggestionLabels[m_ActiveSuggestionIndex].text);
+#if UNITY_2023_2_OR_NEWER
                 focusController.IgnoreEvent(evt);
+#else
+                evt.PreventDefault();
+#endif
                 evt.StopImmediatePropagation();
             }
 
             if (evt.keyCode == KeyCode.UpArrow && SuggestionPopupActive && m_SuggestionLabels != null)
             {
                 SwitchSuggestion(true);
+#if UNITY_2023_2_OR_NEWER
                 focusController.IgnoreEvent(evt);
+#else
+                evt.PreventDefault();
+#endif
                 evt.StopImmediatePropagation();
             }
             if (evt.keyCode == KeyCode.DownArrow && SuggestionPopupActive && m_SuggestionLabels != null)
             {
                 SwitchSuggestion(false);
+#if UNITY_2023_2_OR_NEWER
                 focusController.IgnoreEvent(evt);
+#else
+                evt.PreventDefault();
+#endif
                 evt.StopImmediatePropagation();
             }
         }
@@ -275,8 +291,16 @@ namespace Farbod.DeveloperConsole
         {
             var newString = suggestionHandler.ApplySuggestion(m_Input.value, suggestion); //Apply suggesgion
             m_Input.value = newString; //Replace text field value
-            m_Input.cursorIndex = newString.Length; //Move the cursor to the end
+
+            //Move the cursor to the end
+#if UNITY_2023_2_OR_NEWER
+            m_Input.cursorIndex = newString.Length;
             m_Input.SelectNone();
+#else
+            // In older versions, use Select to move cursor
+            m_Input.Select(newString.Length, 0);
+#endif
+
             HideSuggestionPopup();
         }
         /// <summary>
@@ -319,7 +343,12 @@ namespace Farbod.DeveloperConsole
                     break;
             }
 
+            bool wasAtBottom = m_Log.IsScrolledToBottom();
             m_Log.Add(entry);
+
+            //Scroll to bottom after adding the object, if the view was not scrolled up before
+            if(wasAtBottom)
+                m_Log.ScrollToBottom();
         }
         /// <summary>
         /// Clears this console's logs.
