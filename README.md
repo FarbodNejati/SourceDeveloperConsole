@@ -71,6 +71,8 @@ This is the same UXMLElement used in the built-in editor window, and the element
 You can make your own custom GUI using UGUI or UIToolkit or.. anything else!
 Take a look at [DefaultDeveloperConsole.cs](https://github.com/FarbodNejati/SourceDeveloperConsole/blob/main/Scripts/Core/UXMLElements/DefaultDeveloperConsole.cs) to see how to implement your own custom GUI.
 
+Example: https://youtu.be/OMn8B_0SZeE?si=4nUra9B3Bkx-hF2R
+
 ## How It Works
 * The static `DeveloperConsole` class is the one that executes the commands and has the callbacks for logging things to the console.
 
