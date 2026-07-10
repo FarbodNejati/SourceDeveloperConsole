@@ -349,12 +349,12 @@ namespace Farbod.DeveloperConsole
                     break;
             }
 
-            bool wasAtBottom = m_Log.IsScrolledToBottom();
+            //bool wasAtBottom = m_Log.IsScrolledToBottom();
             m_Log.Add(entry);
 
             //Scroll to bottom after adding the object, if the view was not scrolled up before
-            if(wasAtBottom)
-                m_Log.ScrollToBottom();
+            //if(wasAtBottom)
+            m_Log.ScrollToBottom();
         }
         /// <summary>
         /// Clears this console's logs.
