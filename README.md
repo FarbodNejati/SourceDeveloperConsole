@@ -3,7 +3,7 @@
 A SourceEngine-type developer console for executing commands, and setting variables.
 This tool can be used in the Editor and in **runtime builds**.
 
-![The Built-In Editor window which can be used immediately](https://github.com/FarbodNejati/SourceDeveloperConsole/blob/main/Preview.png)
+<img width="570" height="370" alt="Unity_fdyTyOT9sC" src="https://github.com/user-attachments/assets/9f00b6e1-0240-4c78-9f82-465a6e7a4cf7" />
 
 # Installation
 Install this package by opening the package  manager and installing by git url and entering the following:
@@ -67,6 +67,8 @@ public static int GameDifficulty
 ## Runtime User-Interface
 You can use the provided `DefaultDeveloperConsole` element within your own menus, and apply your own custom styling.
 This is the same UXMLElement used in the built-in editor window, and the element in use in my own games (just with custom styling for a unique look).
+
+In-Game Example: https://youtu.be/OMn8B_0SZeE?si=4nUra9B3Bkx-hF2R
 
 You can make your own custom GUI using UGUI or UIToolkit or.. anything else!
 Take a look at [DefaultDeveloperConsole.cs](https://github.com/FarbodNejati/SourceDeveloperConsole/blob/main/Scripts/Core/UXMLElements/DefaultDeveloperConsole.cs) to see how to implement your own custom GUI.
