@@ -293,13 +293,15 @@ namespace Farbod.DeveloperConsole
             var newString = suggestionHandler.ApplySuggestion(m_Input.value, suggestion); //Apply suggesgion
             m_Input.value = newString; //Replace text field value
 
+            int end = newString.Length;
+
             //Move the cursor to the end
 #if UNITY_2023_2_OR_NEWER
-            m_Input.cursorIndex = newString.Length;
-            m_Input.SelectNone();
+            m_Input.textSelection.cursorIndex = end;
+            m_Input.textSelection.selectIndex = end;
 #else
             // In older versions, use Select to move cursor
-            m_Input.SelectRange(newString.Length, 0);
+            m_Input.SelectRange(end, end);
 #endif
 
             HideSuggestionPopup();
