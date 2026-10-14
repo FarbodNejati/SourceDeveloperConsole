@@ -151,10 +151,23 @@ namespace Farbod.DeveloperConsole
             }
 
             // Boolean
-            if (targetType == typeof(bool) && bool.TryParse(arg_string, out bool result_bool))
+            if (targetType == typeof(bool))
             {
-                result = result_bool;
-                return true;
+                if (arg_string == "1")
+                {
+                    result = true;
+                    return true;
+                }
+                if (arg_string == "0")
+                {
+                    result = false;
+                    return true;
+                }
+                if (bool.TryParse(arg_string, out bool result_bool))
+                {
+                    result = result_bool;
+                    return true;
+                }
             }
 
             // Integer (also handle other integer types)

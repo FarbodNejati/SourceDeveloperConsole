@@ -34,7 +34,7 @@ namespace Farbod.DeveloperConsole
                 if (maxScroll < 0) maxScroll = 0;
 
                 scrollView.scrollOffset = new Vector2(scrollView.scrollOffset.x, maxScroll);
-            }).StartingIn(0);
+            }).StartingIn(10);
         }
 
     }
